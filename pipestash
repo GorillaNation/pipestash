@@ -1,22 +1,73 @@
 #!/usr/bin/env python
 
-import redis
-import json
-import sys
+from redis import StrictRedis
+from json import dumps
+from sys import stdin
 from datetime import datetime
+from socket import getfqdn
+from argparse import ArgumentParser
+from urlparse import urlparse
+from re import sub
 
-r = redis.StrictRedis(host="localhost")
+# parse command line
+parser = ArgumentParser()
+parser.add_argument('-t', '--type', required=True, help='the event type (required)')
+parser.add_argument('-r','--redis-url', help="specify the URL of the redis database to use, defaults to redis://localhost:6379/0", default='redis://localhost:6379/0')
+parser.add_argument('-T','--tags', action='append', nargs='*', help="tags to add to the event", default=[])
+parser.add_argument('-f', '--fields', nargs='*', metavar='field=value', action='append', help="fields to add to the event, FIELD=VALUE, separated by spaces", default=[])
+parser.add_argument('-s', '--source-path', help="specify the @source_path field, defaults to 'stdin'", default='stdin')
+parser.add_argument('-S', '--source-host', help="specify the @source_host field, defaults to the machine's FQDN", default=getfqdn())
+parser.add_argument('-v', '--verbose', help="enable verbose mode", action="store_true")
+args = parser.parse_args()
+
+# parse out fields
+fields = {}
+for fieldargs in args.fields:
+    for fullfield in fieldargs:
+        a,_,b = fullfield.partition("=")
+        fields[a] = b
+
+# flatten tags array
+tags = []
+for tagargs in args.tags:
+    for tag in tagargs:
+        tags.append(tag)
+
+# verbose output
+if args.verbose:
+    def verbose(s):
+        print s
+else:
+    def verbose(s):
+        pass
+
+# parse the redis url and open a connection
+redis_url = urlparse(args.redis_url)
+r = StrictRedis(host=redis_url.hostname, port=redis_url.port, db=sub(r'^/', '', redis_url.path))
 
 # object with static stuff
 obj = {
-        "@fields": {},
-        "@type": "testing",
-        "@tags": ["tag1", "tag2"],
+        "@fields": fields,
+        "@type": args.type,
+        "@tags": tags,
+        "@source_host": args.source_host,
+        "@source_path": args.source_path,
+        "@source": "file://{0}/{1}".format(args.source_host, args.source_path),
 }
 
-for line in sys.stdin:
+while 1:
+    # read a line from stdin, if EOF, finish
+    line = stdin.readline()
+    if not line:
+        break
+
+    # set the timestamp
     obj["@timestamp"] = datetime.utcnow().isoformat('T') + 'Z'
+
+    # set the message
     line = line.rstrip()
     obj["@message"] = line
-    r.rpush("logstash", json.dumps(obj))
-    print json.dumps(obj)
+
+    # shove to redis
+    r.rpush("logstash", dumps(obj))
+    verbose(dumps(obj))
