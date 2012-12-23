@@ -13,6 +13,7 @@ from re import sub
 parser = ArgumentParser()
 parser.add_argument('-t', '--type', required=True, help='the event type (required)')
 parser.add_argument('-r','--redis-url', help="specify the URL of the redis database to use, defaults to redis://localhost:6379/0", default='redis://localhost:6379/0')
+parser.add_argument('-R', '--redis-key', help="redis key to add events to, defaults to logstash", default='logstash')
 parser.add_argument('-T','--tags', action='append', nargs='*', help="tags to add to the event", default=[])
 parser.add_argument('-f', '--fields', nargs='*', metavar='field=value', action='append', help="fields to add to the event, FIELD=VALUE, separated by spaces", default=[])
 parser.add_argument('-s', '--source-path', help="specify the @source_path field, defaults to 'stdin'", default='stdin')
@@ -69,5 +70,5 @@ while 1:
     obj["@message"] = line
 
     # shove to redis
-    r.rpush("logstash", dumps(obj))
+    r.rpush(args.redis_key, dumps(obj))
     verbose(dumps(obj))

@@ -16,6 +16,10 @@ the type to add to the json\_event. has no default and is a required argument.
 
 the URL of the redis server/database to write events to. Defaults to `redis://localhost:6379/0`
 
+	-R | --redis-key REDIS_KEY
+
+the redis key to append log events to. Defaults to 'logstash'
+
 	-T | --tags tag1 [tag2] [...]
 
 tags to add to the json\_event object
