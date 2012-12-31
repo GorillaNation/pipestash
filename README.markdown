@@ -36,6 +36,10 @@ the `@source\_path` to place in the json\_event object. defaults to stdin
 
 the `@source\_host` to place in the json\_event object. defaults to the machine's FQDN
 
+	-O | --stdout
+
+print incoming lines to stdout as well. This is useful if you would also like to log lines with something like [multilog](http://cr.yp.to/daemontools/multilog.html "djb's multilog)
+
 	-v | --verbose
 
 enable verbose output

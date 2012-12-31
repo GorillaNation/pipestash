@@ -2,7 +2,7 @@
 
 from redis import StrictRedis
 from json import dumps
-from sys import stdin
+import sys
 from datetime import datetime
 from socket import getfqdn
 from argparse import ArgumentParser
@@ -18,6 +18,7 @@ parser.add_argument('-T','--tags', action='append', nargs='*', help="tags to add
 parser.add_argument('-f', '--fields', nargs='*', metavar='field=value', action='append', help="fields to add to the event, FIELD=VALUE, separated by spaces", default=[])
 parser.add_argument('-s', '--source-path', help="specify the @source_path field, defaults to 'stdin'", default='stdin')
 parser.add_argument('-S', '--source-host', help="specify the @source_host field, defaults to the machine's FQDN", default=getfqdn())
+parser.add_argument('-O', '--stdout', help="print read lines to stdout as well as to redis", action="store_true")
 parser.add_argument('-v', '--verbose', help="enable verbose mode", action="store_true")
 args = parser.parse_args()
 
@@ -37,7 +38,7 @@ for tagargs in args.tags:
 # verbose output
 if args.verbose:
     def verbose(s):
-        print s
+        print >> sys.stderr, s
 else:
     def verbose(s):
         pass
@@ -56,9 +57,9 @@ obj = {
         "@source": "file://{0}/{1}".format(args.source_host, args.source_path),
 }
 
-while 1:
+while True:
     # read a line from stdin, if EOF, finish
-    line = stdin.readline()
+    line = sys.stdin.readline()
     if not line:
         break
 
@@ -71,4 +72,9 @@ while 1:
 
     # shove to redis
     r.rpush(args.redis_key, dumps(obj))
+
+    # print to sdout?
+    if args.stdout:
+        print line
+
     verbose(dumps(obj))
