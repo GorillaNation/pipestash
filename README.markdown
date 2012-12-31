@@ -38,7 +38,7 @@ the `@source\_host` to place in the json\_event object. defaults to the machine'
 
 	-O | --stdout
 
-print incoming lines to stdout as well. This is useful if you would also like to log lines with something like [multilog](http://cr.yp.to/daemontools/multilog.html "djb's multilog)
+print incoming lines to stdout as well. This is useful if you would also like to log lines with something like [multilog](http://cr.yp.to/daemontools/multilog.html "djb's multilog")
 
 	-v | --verbose
 
