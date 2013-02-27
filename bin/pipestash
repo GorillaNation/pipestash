@@ -17,7 +17,7 @@ def main():
 
     # function to create the consumer
     def createconsumer():
-        proc = multiprocessing.Process(target = pipestash.consumer.consume, args = [queue, output])
+        proc = multiprocessing.Process(target = pipestash.consumer.consume, args = [queue, output, config])
         proc.start()
         return proc
 

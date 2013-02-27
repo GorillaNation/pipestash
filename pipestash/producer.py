@@ -2,34 +2,27 @@
 # also restart the consumer if it dies for some reason
 import sys
 import datetime
-import json
 
 
 def produce(config, queue, create_consumer):
     consumer = create_consumer()
-    event = {
-        "@fields": config.fields,
-        "@type": config.type,
-        "@tags": config.tags,
-        "@source_host": config.source_path,
-        "@source_path": config.source_host,
-        "@source": config.source
-    }
 
     while True:
+        # read the line
         line = sys.stdin.readline()
         if not line:
+            # EOF
             break
-
-        event["@timestamp"] = datetime.datetime.utcnow().isoformat('T') + 'Z'
+        # strip trailing newline
         line = line.rstrip()
-        event["@message"] = line
 
+        # check the consumer and restart if necessary
         if not consumer.is_alive():
             consumer.join()
             consumer = create_consumer()
 
-        queue.put(json.dumps(event))
+        # toss it in the queue
+        queue.put([datetime.datetime.utcnow().isoformat('T') + 'Z', line])
     queue.put(None)
     queue.close()
     return consumer
