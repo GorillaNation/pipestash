@@ -16,6 +16,9 @@ def produce(config, queue, create_consumer):
         # strip trailing newline
         line = line.rstrip()
 
+        if config.stdout:
+            print line
+
         # check the consumer and restart if necessary
         if not consumer.is_alive():
             consumer.join()
