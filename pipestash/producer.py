@@ -5,9 +5,7 @@ import datetime
 import signal
 
 
-def produce(config, queue, create_consumer):
-    consumer = create_consumer()
-
+def produce(config, queue):
     try:
         def graceful(signum, frame):
             raise Exception("caught {0} signal, exiting".format(signum))
@@ -28,11 +26,6 @@ def produce(config, queue, create_consumer):
             if config.stdout:
                 print line
 
-            # check the consumer and restart if necessary
-            if not consumer.is_alive():
-                consumer.join()
-                consumer = create_consumer()
-
             # toss it in the queue
             queue.put([datetime.datetime.utcnow().isoformat('T') + 'Z', line])
     except Exception as e:
@@ -40,6 +33,6 @@ def produce(config, queue, create_consumer):
         # FIXME: handle this properly. maybe by putting a message in the queue
         # if there's an uncaught exception besides an interrupt?
         pass
+
+    print "finished putting shit into the queue"
     queue.put(None)
-    queue.close()
-    return consumer

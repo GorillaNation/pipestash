@@ -4,31 +4,26 @@ import pipestash
 import pipestash.producer
 import pipestash.consumer
 import pipestash.output.redisoutput
-import multiprocessing
+import Queue
 
 def main():
     config = pipestash.parseargs()
 
     # create queue
-    queue = multiprocessing.Queue()
+    queue = Queue.Queue()
 
     # instantiate output plugin
     output = pipestash.output.redisoutput.RedisOutput(config)
 
-    # function to create the consumer
-    def createconsumer():
-        proc = multiprocessing.Process(target = pipestash.consumer.consume, args = [queue, output, config])
-        proc.start()
-        return proc
+    # start the queue consumer thread
+    consumer = pipestash.consumer.Consumer(queue, output, config)
+    consumer.setDaemon(True)
+    consumer.start()
 
-    consumer = pipestash.producer.produce(config, queue, createconsumer)
+    # start the producer
+    pipestash.producer.produce(config, queue)
 
-    while True:
-        consumer.join()
-        if consumer.exitcode != 0:
-            consumer = createconsumer()
-        else:
-            break
-
+    # wait until the queue is done
+    queue.join()
 if __name__ == "__main__":
     main()
