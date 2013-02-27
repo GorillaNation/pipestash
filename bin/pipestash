@@ -25,7 +25,7 @@ def main():
 
     while True:
         consumer.join()
-        if consumer.exit_code != 0:
+        if consumer.exitcode != 0:
             consumer = createconsumer()
         else:
             break

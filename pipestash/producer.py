@@ -11,8 +11,8 @@ def produce(config, queue, create_consumer):
         "@fields": config.fields,
         "@type": config.type,
         "@tags": config.tags,
-        "@source_host": config.source_host,
-        "@source_path": config.source_path,
+        "@source_host": config.source_path,
+        "@source_path": config.source_host,
         "@source": config.source
     }
 
@@ -21,18 +21,15 @@ def produce(config, queue, create_consumer):
         if not line:
             break
 
-        print "LINE: line"
-
         event["@timestamp"] = datetime.datetime.utcnow().isoformat('T') + 'Z'
         line = line.rstrip()
         event["@message"] = line
 
         if not consumer.is_alive():
-            print "consumer is dead, long live consumer!"
             consumer.join()
             consumer = create_consumer()
 
-        print "putting shit in queue"
-        str = json.dumps(event)
-        #queue.put(json.dumps(event))
+        queue.put(json.dumps(event))
+    queue.put(None)
     queue.close()
+    return consumer

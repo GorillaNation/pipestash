@@ -31,7 +31,7 @@ def parseargs():
     for tagargs in args.tags:
         for tag in tagargs:
             tags.append(tag)
-    args.tags = args
+    args.tags = tags
 
     # verbose output
     if args.verbose:
