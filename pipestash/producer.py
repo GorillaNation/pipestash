@@ -14,6 +14,8 @@ def produce(config, queue):
         signal.signal(signal.SIGINT, graceful)
         signal.signal(signal.SIGQUIT, graceful)
 
+        droppedcount = 0
+        firstdropped = None
         while True:
             # read the line
             line = sys.stdin.readline()
@@ -27,7 +29,25 @@ def produce(config, queue):
                 print line
 
             # toss it in the queue
-            queue.put([datetime.datetime.utcnow().isoformat('T') + 'Z', line])
+            try:
+                queue.put([datetime.datetime.utcnow().isoformat('T') + 'Z', line])
+            except Queue.FULL:
+                if not firstdropped:
+                    firstdropped = datetime.datetime.utcnow().isoformat('T') + 'Z'
+                droppedcount += 1
+
+            if droppedcount:
+                try:
+                    queue.put([
+                        datetime.datetime.utcnow().isoformat('T') + 'Z', 
+                        "dropped {0} messages starting at {1} due to full queue".format(droppedcount, firstdropped)
+                    ])
+                    droppedcount = 0
+                    firstdropped = 0
+                except Queue.FULL:
+                    # queue still full. keep going
+                    pass
+
     except Exception as e:
         print "caught exception {0}, queue length ~{1}".format(e, queue.qsize())
         # FIXME: handle this properly. maybe by putting a message in the queue

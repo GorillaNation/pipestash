@@ -12,4 +12,10 @@ class RedisOutput(pipestash.output.Output):
         self.redis_key = config.redis_key
 
     def do(self, item):
-        self.redis.rpush(self.redis_key, item)
+        while True:
+            try:
+                self.redis.rpush(self.redis_key, item)
+                break
+            except RedisError:
+                # something failed, try again
+                pass

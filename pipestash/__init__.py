@@ -13,6 +13,7 @@ def parseargs():
     parser.add_argument('-S', '--source-host', help="specify the @source_host field, defaults to the machine's FQDN", default=socket.getfqdn())
     parser.add_argument('-O', '--stdout', help="print read lines to stdout as well as to redis", action="store_true")
     parser.add_argument('-v', '--verbose', help="enable verbose mode", action="store_true")
+    parser.add_argument('-q', '--queue-size', help="set the maximum size for the internal queue in number of messages, defaults to 10000", default=10000)
     args = parser.parse_args()
 
     # set source
