@@ -31,7 +31,7 @@ def produce(config, queue):
 
             # toss it in the queue
             try:
-                queue.put([datetime.datetime.utcnow().isoformat('T') + 'Z', line], config.blocking_read)
+                queue.put([datetime.datetime.utcnow().isoformat('T') + 'Z', line], config.block)
             except Queue.Full:
                 if not firstdropped:
                     firstdropped = datetime.datetime.utcnow().isoformat('T') + 'Z'
