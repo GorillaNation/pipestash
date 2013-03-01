@@ -26,7 +26,6 @@ class Consumer(threading.Thread):
                 self.output.do(json.dumps(self.event))
             except Exception as e:
                 # FIXME: do something about exceptions
-                print "caught exception from output plugin: {0}".format(e)
                 pass
             self.queue.task_done()
         self.queue.task_done()
