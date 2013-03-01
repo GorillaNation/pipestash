@@ -4,13 +4,14 @@ import pipestash
 import pipestash.producer
 import pipestash.consumer
 import pipestash.output.redisoutput
+import pipestash.output.sleepyoutput
 import Queue
 
 def main():
     config = pipestash.parseargs()
 
     # create queue
-    queue = Queue.Queue()
+    queue = Queue.Queue(maxsize = config.queue_size)
 
     # instantiate output plugin
     output = pipestash.output.redisoutput.RedisOutput(config)

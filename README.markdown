@@ -51,6 +51,10 @@ enable verbose output
 
 maximum size of internal queue before pipestash starts dropping messages
 
+	-B | --block
+
+block reads when the queue fills up. This can be useful for importing large amounts of logs from an existing logfile
+
 # internal queueing mechanism
 
 In order to try to prevent the process writing into pipestash from blocking during intermittent redis issues or spikes of incoming messages, pipestash employs an internal queueing mechanism.

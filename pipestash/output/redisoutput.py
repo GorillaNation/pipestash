@@ -16,6 +16,6 @@ class RedisOutput(pipestash.output.Output):
             try:
                 self.redis.rpush(self.redis_key, item)
                 break
-            except RedisError:
+            except redis.RedisError:
                 # something failed, try again
                 pass

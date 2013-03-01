@@ -29,5 +29,4 @@ class Consumer(threading.Thread):
                 print "caught exception from output plugin: {0}".format(e)
                 pass
             self.queue.task_done()
-        print "finish reading shit from the queue"
         self.queue.task_done()
