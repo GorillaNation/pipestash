@@ -12,6 +12,6 @@ setup(
     description="read from stdin, write events to logstash's redis input",
     long_description=open('README.markdown').read(),
     install_requires=[
-        "redis",
+        "python-redis",
     ],
 )
