@@ -2,9 +2,9 @@ from distutils.core import setup
 
 setup(
     name='pipestash',
-    version='0.1.0',
+    version='0.1.1',
     author='GorillaNation',
-    author_email='jeremy.kitchen@gorillanation.com',
+    author_email='noc@evolvemediallc.com',
     packages=['pipestash', 'pipestash.output'],
     scripts=['bin/pipestash'],
     url='https://github.com/GorillaNation/pipestash',
