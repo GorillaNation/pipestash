@@ -1,46 +1,54 @@
 import socket
-import argparse
+import optparse
 
 def parseargs():
+    def parse_field_args(option, opt_str, value, parser):
+        args=[]
+        for arg in parser.rargs:
+            if arg[0] != "-":
+                args.append(arg)
+            else:
+                del parser.rargs[:len(args)]
+                break
+        if getattr(parser.values, option.dest):
+            args.extend(getattr(parser.values, option.dest))
+        setattr(parser.values, option.dest, args)
+
     # parse command line
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-t', '--type', required=True, help='the event type (required)')
-    parser.add_argument('-r','--redis-url', help="specify the URL of the redis database to use, defaults to redis://localhost:6379/0", default='redis://localhost:6379/0')
-    parser.add_argument('-R', '--redis-key', help="redis key to add events to, defaults to logstash", default='logstash')
-    parser.add_argument('-T','--tags', action='append', nargs='*', help="tags to add to the event", default=[])
-    parser.add_argument('-f', '--fields', nargs='*', metavar='field=value', action='append', help="fields to add to the event, FIELD=VALUE, separated by spaces", default=[])
-    parser.add_argument('-s', '--source-path', help="specify the @source_path field, defaults to 'stdin'", default='stdin')
-    parser.add_argument('-S', '--source-host', help="specify the @source_host field, defaults to the machine's FQDN", default=socket.getfqdn())
-    parser.add_argument('-O', '--stdout', help="print read lines to stdout as well as to redis", action="store_true")
-    parser.add_argument('-v', '--verbose', help="enable verbose mode", action="store_true")
-    parser.add_argument('-q', '--queue-size', help="set the maximum size for the internal queue in number of messages, defaults to 10000", default=10000, type = int)
-    parser.add_argument('-B', '--block', help="block reads if the queue is full. defaults to False", default=False, action='store_true')
-    args = parser.parse_args()
+    parser = optparse.OptionParser()
+    parser.add_option('-t', '--type', dest='type', help='the event type (required)')
+    parser.add_option('-r','--redis-url', dest='redis_url', help="specify the URL of the redis database to use, defaults to redis://localhost:6379/0", default='redis://localhost:6379/0')
+    parser.add_option('-R', '--redis-key', dest='redis_key', help="redis key to add events to, defaults to logstash", default='logstash')
+    parser.add_option('-T','--tags', dest='tags', action='callback', callback=parse_field_args, help="tags to add to the event", default=[])
+    parser.add_option('-f', '--fields', dest='fields', action='callback', callback=parse_field_args, metavar='field=value', help="fields to add to the event, FIELD=VALUE, separated by spaces", default=[])
+    parser.add_option('-s', '--source-path', dest='source_path', help="specify the @source_path field, defaults to 'stdin'", default='stdin')
+    parser.add_option('-S', '--source-host', dest='source_host', help="specify the @source_host field, defaults to the machine's FQDN", default=socket.getfqdn())
+    parser.add_option('-O', '--stdout', dest='stdout', help="print read lines to stdout as well as to redis", action="store_true")
+    parser.add_option('-v', '--verbose', dest='verbose', help="enable verbose mode", action="store_true")
+    parser.add_option('-q', '--queue-size', dest='queue_size', help="set the maximum size for the internal queue in number of messages, defaults to 10000", default=10000, type="int")
+    parser.add_option('-B', '--block', dest='block', help="block reads if the queue is full. defaults to False", default=False, action='store_true')
+    options, _ = parser.parse_args()
+
+    # required fields validation
+    if not options.type:
+        parser.error('-t|--type is a required argument')
 
     # set source
-    args.source = "file:///{0}/{1}".format(args.source_host, args.source_path)
+    options.source = "file:///{0}/{1}".format(options.source_host, options.source_path)
 
     # parse out fields
     fields = {}
-    for fieldargs in args.fields:
-        for fullfield in fieldargs:
-            a,_,b = fullfield.partition("=")
-            fields[a] = b
-    args.fields = fields
-
-    # flatten tags array
-    tags = []
-    for tagargs in args.tags:
-        for tag in tagargs:
-            tags.append(tag)
-    args.tags = tags
+    for fieldargs in options.fields:
+        a,_,b = fieldargs.partition("=")
+        fields[a] = b
+    options.fields = fields
 
     # verbose output
-    if args.verbose:
+    if options.verbose:
         def verbose(s):
             print >> sys.stderr, s
     else:
         def verbose(s):
             pass
 
-    return args
+    return options
