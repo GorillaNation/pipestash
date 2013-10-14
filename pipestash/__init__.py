@@ -13,7 +13,7 @@ def parseargs():
     parser.add_option('-S', '--source-host', dest='source_host', help="specify the @source_host field, defaults to the machine's FQDN", default=socket.getfqdn())
     parser.add_option('-O', '--stdout', dest='stdout', help="print read lines to stdout as well as to redis", action="store_true")
     parser.add_option('-v', '--verbose', dest='verbose', help="enable verbose mode", action="store_true")
-    parser.add_option('-q', '--queue-size', dest='queue_size', help="set the maximum size for the internal queue in number of messages, defaults to 10000", default=10000, type = int)
+    parser.add_option('-q', '--queue-size', dest='queue_size', help="set the maximum size for the internal queue in number of messages, defaults to 10000", default=10000, type="int")
     parser.add_option('-B', '--block', dest='block', help="block reads if the queue is full. defaults to False", default=False, action='store_true')
     options, _ = parser.parse_args()
 
