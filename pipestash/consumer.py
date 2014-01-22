@@ -13,8 +13,8 @@ class Consumer(threading.Thread):
             "@fields": config.fields,
             "@type": config.type,
             "@tags": config.tags,
-            "@source_host": config.source_path,
-            "@source_path": config.source_host,
+            "@source_host": config.source_host,
+            "@source_path": config.source_path,
             "@source": config.source
         }
 

@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='pipestash',
-    version='0.1.2',
+    version='0.1.2-1',
     author='GorillaNation',
     author_email='noc@evolvemediallc.com',
     packages=['pipestash', 'pipestash.output'],
