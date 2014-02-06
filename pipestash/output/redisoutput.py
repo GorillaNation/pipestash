@@ -4,6 +4,8 @@ import redis
 import json
 import inspect
 import re
+import time
+import random
 
 class RedisOutput(pipestash.output.Output):
     def __init__(self, config):
@@ -16,6 +18,6 @@ class RedisOutput(pipestash.output.Output):
             try:
                 self.redis.rpush(self.redis_key, item)
                 break
-            except redis.RedisError:
-                # something failed, try again
+            except (redis.ConnectionError, redis.ResponseError):
+                time.sleep(config.timeout * random.random())
                 pass
