@@ -6,9 +6,13 @@ import pipestash.consumer
 import pipestash.output.redisoutput
 import pipestash.output.sleepyoutput
 import Queue
+import os
 
 def main():
     config = pipestash.parseargs()
+
+    # set the niceness value
+    os.nice(config.nice)
 
     # create queue
     queue = Queue.Queue(maxsize = config.queue_size)

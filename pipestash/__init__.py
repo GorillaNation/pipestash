@@ -28,6 +28,7 @@ def parseargs():
     parser.add_option('-q', '--queue-size', dest='queue_size', help="set the maximum size for the internal queue in number of messages, defaults to 10000", default=10000, type="int")
     parser.add_option('-B', '--block', dest='block', help="block reads if the queue is full. defaults to False", default=False, action='store_true')
     parser.add_option('-w', '--timeout', dest='timeout', help="if pipestash is unable to connect to redis or redis runs OOM, put the consumer thread to sleep a random amount of time between `-w seconds` and +0 seconds. defaults to 20 seconds", default=20, type="float")
+    parser.add_option('-n', '--nice', dest='nice', help="sets the niceness value of the process", default=5, type="int")
     options, _ = parser.parse_args()
 
     # required fields validation
