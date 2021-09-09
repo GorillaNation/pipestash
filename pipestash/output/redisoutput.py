@@ -1,4 +1,4 @@
-import urlparse
+import urllib.parse
 import pipestash.output
 import redis
 import json
@@ -9,7 +9,7 @@ import random
 
 class RedisOutput(pipestash.output.Output):
     def __init__(self, config):
-        redis_url = urlparse.urlparse(config.redis_url)
+        redis_url = urllib.parse.urlparse(config.redis_url)
         self.redis = redis.StrictRedis(host=redis_url.hostname, port = redis_url.port, db=re.sub(r'^/','',redis_url.path))
         self.redis_key = config.redis_key
 
