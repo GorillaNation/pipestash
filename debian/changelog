@@ -1,0 +1,5 @@
+pipestash (1.0) UNRELEASED; urgency=medium
+
+  * debianized package
+
+ -- jdelker <jd@onix.de>  Wed, 19 Oct 2022 22:34:53 +0200
