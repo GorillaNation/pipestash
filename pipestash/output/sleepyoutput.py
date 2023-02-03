@@ -11,4 +11,4 @@ class SleepyOutput(pipestash.output.Output):
 
     def do(self, item):
         time.sleep(self.sleepytime)
-        print item
+        print(item)

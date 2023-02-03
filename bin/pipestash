@@ -5,7 +5,7 @@ import pipestash.producer
 import pipestash.consumer
 import pipestash.output.redisoutput
 import pipestash.output.sleepyoutput
-import Queue
+import queue
 import os
 
 def main():
@@ -15,20 +15,20 @@ def main():
     os.nice(config.nice)
 
     # create queue
-    queue = Queue.Queue(maxsize = config.queue_size)
+    msgqueue = queue.Queue(maxsize = config.queue_size)
 
     # instantiate output plugin
     output = pipestash.output.redisoutput.RedisOutput(config)
 
     # start the queue consumer thread
-    consumer = pipestash.consumer.Consumer(queue, output, config)
+    consumer = pipestash.consumer.Consumer(msgqueue, output, config)
     consumer.setDaemon(True)
     consumer.start()
 
     # start the producer
-    pipestash.producer.produce(config, queue)
+    pipestash.producer.produce(config, msgqueue)
 
     # wait until the queue is done
-    queue.join()
+    msgqueue.join()
 if __name__ == "__main__":
     main()

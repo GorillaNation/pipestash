@@ -3,7 +3,7 @@
 import sys
 import datetime
 import signal
-import Queue
+import queue
 
 
 def produce(config, queue):
@@ -27,7 +27,7 @@ def produce(config, queue):
             line = line.rstrip()
 
             if config.stdout:
-                print line
+                print(line)
 
             # toss it in the queue
             try:

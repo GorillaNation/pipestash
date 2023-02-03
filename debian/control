@@ -1,0 +1,33 @@
+Source: pipestash
+Maintainer: jdelker <jd@onix.de>
+Section: python
+Priority: optional
+Build-Depends: python3, dh-python, debhelper (>= 9)
+Standards-Version: 3.9.6
+Homepage: https://github.com/jdelker/pipestash
+
+Package: python-pipestash
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
+Description: read from stdin, write events to logstash's redis input
+ # pipestash
+ .
+ Pipestash is a tool which will read lines from stdin, format them as logstash `json_event` events, and throw them into a redis list for consumption by a logstash agent.
+ .
+ The design philosophy is to try *really* hard not to lose any messages, and also to try not to block the process being piped into pipestash. And also be able to handle transient failures of the upstream redis server, and also to notify the end user should we end up actually having to drop messages.
+ .
+ # other backends
+ Support for other backends is not planned, but if you would like to submit a pull request, I'm willing to take a look, however this should be simple enough for you to just write your own :)
+ .
+ Additionally, support for other redis types is not currently planned, but I'll entertain pull requests
+ .
+ # command line arguments
+ .
+ 	-t | --type TYPE
+ .
+ the type to add to the json\_event. has no default and is a required argument.
+ .
+ 	-r | --redis-url REDIS_URL
+ .
+ the URL of the redis server/database to write events to. Defaults to `redis://localhost:6379/0`
+

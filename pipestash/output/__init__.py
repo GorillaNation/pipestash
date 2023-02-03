@@ -1,5 +1,5 @@
 # output module. only does redis for now
-import urlparse
+import urllib.parse
 
 class Output(object):
     def __init__(self, config):
